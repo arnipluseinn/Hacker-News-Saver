@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Hacker News Saver",
-  "version": "1.2",
+  "version": "1.4.0",
   "description": "Save Hacker News articles to read later.",
   "permissions": [
     "storage"
@@ -11,6 +11,10 @@
       "matches": [
         "https://news.ycombinator.com/",
         "https://news.ycombinator.com/news",
+        "https://news.ycombinator.com/newest", 
+        "https://news.ycombinator.com/ask", 
+        "https://news.ycombinator.com/jobs",   
+        "https://news.ycombinator.com/show",  
         "https://news.ycombinator.com/front*",
         "https://news.ycombinator.com/pool",
         "https://news.ycombinator.com/invited",
