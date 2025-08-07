@@ -1,38 +1,48 @@
 // Function to add a checkbox to an article row
 function addCheckboxToArticle(article) {
-  // Find the title element within the article row
   const titleElement = article.querySelector('span.titleline > a');
+  if (!titleElement) return;
 
-  // The metadata is in the *next* table row
-  const subtextRow = article.nextElementSibling;
+  let articleUrl;
+  let commentsUrl;
 
-  if (!titleElement || !subtextRow) {
-    return; // Not a standard article post
+  // --- NEW LOGIC TO HANDLE BOTH LINK TYPES ---
+
+  // CASE 1: The main link is an internal post (Ask HN, Show HN, Jobs etc.)
+  if (titleElement.href.includes('item?id=')) {
+    // For these posts, the main link IS the comments page.
+    // There is no external article, so we'll point both to the same HN page.
+    articleUrl = titleElement.href;
+    commentsUrl = titleElement.href;
   }
+  // CASE 2: The main link is an external article.
+  else {
+    articleUrl = titleElement.href;
+    const subtextRow = article.nextElementSibling;
+    if (!subtextRow) return; // Should not happen, but a good safeguard.
 
-  // --- DEFINITIVE FIX ---
-  // Instead of guessing the position, we now search for the link by its text.
-  const allSublinks = subtextRow.querySelectorAll('.subline a');
-  const commentLink = Array.from(allSublinks).find(link =>
-    link.textContent.includes('comment') || link.textContent.includes('discuss')
-  );
+    // For external links, we MUST find a separate "comments" or "discuss" link.
+    const allSublinks = subtextRow.querySelectorAll('.subline a');
+    const commentLink = Array.from(allSublinks).find(link =>
+      link.textContent.includes('comment') || link.textContent.includes('discuss')
+    );
 
-  // If no link with that text is found, we safely skip this row.
-  if (!commentLink) {
-    return;
+    // If no comment link exists for an external article, skip it.
+    if (!commentLink) return;
+    commentsUrl = commentLink.href;
   }
-  // --- END OF FIX ---
+  // --- END OF NEW LOGIC ---
 
-  // Create the checkbox element
+  // If we got this far, we have valid URLs, so we can create the checkbox.
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
   checkbox.style.marginRight = '8px';
   checkbox.style.verticalAlign = 'middle';
-  checkbox.dataset.url = titleElement.href;
+  checkbox.dataset.url = titleElement.href; // Use original href as a unique key
 
   // Check storage to see if this article is already saved
   chrome.storage.local.get({ savedArticles: [] }, (result) => {
-    const isSaved = result.savedArticles.some(a => a.url === titleElement.href);
+    const isSaved = result.savedArticles.some(a => a.url === articleUrl);
     if (isSaved) {
       checkbox.checked = true;
     }
@@ -42,8 +52,8 @@ function addCheckboxToArticle(article) {
   checkbox.addEventListener('change', (event) => {
     const articleData = {
       title: titleElement.innerText,
-      url: titleElement.href,
-      comments: commentLink.href,
+      url: articleUrl,
+      comments: commentsUrl,
       savedAt: new Date().toISOString()
     };
     if (event.target.checked) {
@@ -63,7 +73,6 @@ function addCheckboxToArticle(article) {
     }
   });
 
-  // This is the most reliable insertion point: inside the .titleline span, before the main link.
   if (titleElement.parentElement) {
     titleElement.parentElement.insertBefore(checkbox, titleElement);
   }
