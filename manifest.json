@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Hacker News Saver",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Save Hacker News articles to read later.",
   "permissions": [
     "storage"
@@ -9,8 +9,24 @@
   "content_scripts": [
     {
       "matches": [
+        "https://news.ycombinator.com/",
         "https://news.ycombinator.com/news",
-        "https://news.ycombinator.com/"
+        "https://news.ycombinator.com/front*",
+        "https://news.ycombinator.com/pool",
+        "https://news.ycombinator.com/invited",
+        "https://news.ycombinator.com/shownew",
+        "https://news.ycombinator.com/asknew",
+        "https://news.ycombinator.com/best",
+        "https://news.ycombinator.com/active",
+        "https://news.ycombinator.com/noobstories",
+        "https://news.ycombinator.com/classic",
+        "https://news.ycombinator.com/launches",
+        "https://news.ycombinator.com/highlights",
+        "https://news.ycombinator.com/bestcomments",
+        "https://news.ycombinator.com/noobcomments",
+        "https://news.ycombinator.com/leaders",
+        "https://news.ycombinator.com/topcolors",
+        "https://news.ycombinator.com/whoishiring"
       ],
       "js": [
         "content.js"
